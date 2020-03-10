@@ -1,0 +1,63 @@
+### Convert CVAT.xml to COCO.xml 
+
+from PIL import Image
+import os
+import xml.etree.ElementTree as ET
+
+output_folder = (r'C:\Users\domin\OneDrive\Documents\GlobalLogic\weapon detection\video\video\weapon_detection-20\weapon_detection-20_XML\\')
+
+
+tree = ET.parse(r'C:\Users\domin\OneDrive\Documents\GlobalLogic\weapon detection\video\video\weapon_detection-20\35_new_flashing_gun20.xml')
+root = tree.getroot()
+
+
+
+
+for image in root:
+    if 'name' in image.attrib.keys():
+        img_name, height, width = image.attrib['name'], image.attrib['height'], image.attrib['width']
+    else:
+        continue
+    xmin_size, ymin_size, xmax_size, ymax_size = (image[0].attrib['xtl']), image[0].attrib['ytl'], image[0].attrib['xbr'], image[0].attrib['ybr']
+    
+    print(img_name)
+    
+    tree = ET.ElementTree()
+    root = ET.Element('annotation')
+    tree._setroot(root)
+    folder = ET.SubElement(root, 'folder')
+    folder.text = 'DATASET/images_filt/'
+    file_name = ET.SubElement(root, 'filename')
+    file_name.text = img_name.split('.')[0] + '.jpg'
+    img_size = ET.SubElement(root, 'size')
+    img_width = ET.SubElement(img_size, 'width')
+    img_height = ET.SubElement(img_size, 'height')
+    img_depth = ET.SubElement(img_size, 'depth')
+    img_width.text = str(width)
+    img_height.text = str(height)
+    img_depth.text = str(3)
+    segmented = ET.SubElement(root, 'segmented')
+    segmented.text = '0'
+    for bbox in image:
+        object0 = ET.SubElement(root, 'object')
+        object_name = ET.SubElement(object0, 'name')
+        object_name.text = 'gun'
+        pose = ET.SubElement(object0, 'pose')
+        pose.text = 'Unspecified'
+        truncated = ET.SubElement(object0, 'truncated')
+        truncated.text = '0'
+        difficult = ET.SubElement(object0, 'difficult')
+        difficult.text = '0'
+        bndbox = ET.SubElement(object0, 'bndbox')
+        xmin = ET.SubElement(bndbox, 'xmin')
+        ymin = ET.SubElement(bndbox, 'ymin')
+        xmax = ET.SubElement(bndbox, 'xmax')
+        ymax = ET.SubElement(bndbox, 'ymax')
+    
+       
+        xmin.text = str(int(float(xmin_size)))
+        ymin.text = str(int(float(ymin_size)))
+        xmax.text = str(int(float(xmax_size)))
+        ymax.text = str(int(float(ymax_size)))
+            
+        tree.write(output_folder + img_name.split('.')[0] + '.xml')
