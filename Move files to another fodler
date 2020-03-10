@@ -1,0 +1,12 @@
+#### Move files to another folder
+
+import shutil
+import os 
+
+source = '/content/gdrive/My Drive/GlobalLogic/JPEG/ALL Annotations1/'
+dest1 = '/content/gdrive/My Drive/GlobalLogic/'
+
+files = os.listdir(source)
+
+for f in files:
+    shutil.move(source+f,dest1)
